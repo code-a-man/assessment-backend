@@ -35,8 +35,10 @@ const calcAvgBrandRevenue = (rows) => {
 		}
 	}
 	});
+
 	Object.keys(brands).forEach(brand => {
-		brands[brand] = (brands[brand].revenue / brands[brand].purchases).toFixed(2);
+		brands[brand].avg = (brands[brand].revenue / brands[brand].purchases).toFixed(2);
+		brands[brand].revenue = brands[brand].revenue.toFixed(2);
 		if (brand === "") {
 			brands["unknown"] = brands[brand];
 			delete brands[brand];
