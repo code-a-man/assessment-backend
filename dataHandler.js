@@ -17,7 +17,8 @@ const updateSheet = async () => {
 	console.log("Updated sheet");
 	const avgBrandRevenue = calcAvgBrandRevenue(rows);
 	const weeklyDistinctSessions = getWeeklyDistinctSessions(rows);
-	return { lastUpdate, avgBrandRevenue, weeklyDistinctSessions };
+	const dailyConversionRate = calcDailyConversionRate(rows);
+	return { lastUpdate, avgBrandRevenue, weeklyDistinctSessions, dailyConversionRate };
 };
 
 const calcAvgBrandRevenue = (rows) => {
@@ -63,6 +64,23 @@ const getWeeklyDistinctSessions = (rows) => {
 		sessionsWeeks[week] = Object.keys(sessions[week]).length;
 	});
 	return sessionsWeeks;
+}
+
+const calcDailyConversionRate = (rows) => {
+	const dates = {};
+	rows.forEach(row => {
+		const date = row.event_time.split(' ')[0]
+		dates[date] = dates[date] || { purchases: 0, ratio: 0, sessions: {} };
+		dates[date].sessions[row.user_session] = true;
+		if (row.event_type === 'purchase') {
+			dates[date].purchases++;
+		}
+	});
+	Object.keys(dates).forEach(date => {
+		dates[date].ratio = parseFloat((dates[date].purchases / (Object.keys(dates[date].sessions).length) * 100).toFixed(2))
+		dates[date] = { sessions: Object.keys(dates[date].sessions).length, purchases: dates[date].purchases, value: dates[date].ratio, };
+	});
+	return dates;
 }
 
 let data = await updateSheet();
