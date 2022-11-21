@@ -16,8 +16,8 @@ const updateSheet = async () => {
 	const lastUpdate = new Date();
 	console.log("Updated sheet");
 	const avgBrandRevenue = calcAvgBrandRevenue(rows);
-
-	return { lastUpdate, avgBrandRevenue };
+	const weeklyDistinctSessions = getWeeklyDistinctSessions(rows);
+	return { lastUpdate, avgBrandRevenue, weeklyDistinctSessions };
 };
 
 const calcAvgBrandRevenue = (rows) => {
@@ -46,6 +46,23 @@ const calcAvgBrandRevenue = (rows) => {
 	});
 
 	return brands;
+}
+
+const getWeeklyDistinctSessions = (rows) => {
+	const sessions = {};
+	const sessionsWeeks = {};
+	rows.forEach(row => {
+		const currentDate = new Date(row.event_time);
+		const startDate = new Date(currentDate.getFullYear(), 0, 1);
+		const days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
+		const week = Math.ceil(days / 7);
+		sessions[week] = sessions[week] || {};
+		sessions[week][row.user_session] = true;
+	});
+	Object.keys(sessions).forEach(week => {
+		sessionsWeeks[week] = Object.keys(sessions[week]).length;
+	});
+	return sessionsWeeks;
 }
 
 let data = await updateSheet();
