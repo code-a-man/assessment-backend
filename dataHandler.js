@@ -18,7 +18,8 @@ const updateSheet = async () => {
 	const avgBrandRevenue = calcAvgBrandRevenue(rows);
 	const weeklyDistinctSessions = getWeeklyDistinctSessions(rows);
 	const dailyConversionRate = calcDailyConversionRate(rows);
-	return { lastUpdate, avgBrandRevenue, weeklyDistinctSessions, dailyConversionRate };
+	const netRevenueOfEachCustomer = calcNetRevenueOfEachCustomer(rows);
+	return { lastUpdate, avgBrandRevenue, weeklyDistinctSessions, dailyConversionRate, netRevenueOfEachCustomer };
 };
 
 const calcAvgBrandRevenue = (rows) => {
@@ -81,6 +82,22 @@ const calcDailyConversionRate = (rows) => {
 		dates[date] = { sessions: Object.keys(dates[date].sessions).length, purchases: dates[date].purchases, value: dates[date].ratio, };
 	});
 	return dates;
+}
+
+const calcNetRevenueOfEachCustomer = (rows) => {
+	const customers = {};
+	rows.forEach(row => {
+		customers[row.user_id] = customers[row.user_id] || { purchases: 0, refunds: 0 };
+		if (row.event_type === 'purchase') {
+			customers[row.user_id].purchases += parseFloat(row.price);
+		} else if (row.event_type === 'refund') {
+			customers[row.user_id].refunds += parseFloat(row.price);
+		}
+	});
+	Object.keys(customers).forEach(customer => {
+		customers[customer] = parseFloat((customers[customer].purchases - customers[customer].refunds).toFixed(2));
+	});
+	return customers;
 }
 
 let data = await updateSheet();
