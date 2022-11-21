@@ -15,8 +15,26 @@ const updateSheet = async () => {
 	const rows = await sheet.getRows();
 	const lastUpdate = new Date();
 	console.log("Updated sheet");
-	return { lastUpdate };
+	const avgBrandRevenue = calcAvgBrandRevenue(rows);
+
+	return { lastUpdate, avgBrandRevenue };
 };
+
+const calcAvgBrandRevenue = (rows) => {
+	// ? for now just return total revenue without filtering purchases
+	// TODO Calculate average brand revenue with filtering purchases
+	// TODO Mark blank brands as "Unknown"
+	const brands = {};
+	rows.forEach(row => {
+		brands[row.brand] = brands[row.brand] || 0.00;
+		brands[row.brand] += parseFloat(row.price)
+	});
+	Object.keys(brands).forEach(brand => {
+		brands[brand] = parseFloat(brands[brand].toFixed(2));
+	});
+
+	return brands;
+}
 
 let data = await updateSheet();
 
