@@ -21,16 +21,26 @@ const updateSheet = async () => {
 };
 
 const calcAvgBrandRevenue = (rows) => {
-	// ? for now just return total revenue without filtering purchases
-	// TODO Calculate average brand revenue with filtering purchases
-	// TODO Mark blank brands as "Unknown"
 	const brands = {};
-	rows.forEach(row => {
-		brands[row.brand] = brands[row.brand] || 0.00;
-		brands[row.brand] += parseFloat(row.price)
+	rows.forEach((row) => {
+		if (row.event_type === "purchase") {
+		if (row.brand in brands) {
+			brands[row.brand].revenue += parseFloat(row.price);
+			brands[row.brand].purchases += 1;
+		} else {
+			brands[row.brand] = {
+				revenue: parseFloat(row.price),
+				purchases: 1,
+			};
+		}
+	}
 	});
 	Object.keys(brands).forEach(brand => {
-		brands[brand] = parseFloat(brands[brand].toFixed(2));
+		brands[brand] = (brands[brand].revenue / brands[brand].purchases).toFixed(2);
+		if (brand === "") {
+			brands["unknown"] = brands[brand];
+			delete brands[brand];
+		}
 	});
 
 	return brands;
