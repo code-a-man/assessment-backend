@@ -8,8 +8,8 @@ const updateSheet = async () => {
 	const sheet = doc.sheetsByIndex[0];
 
 	const rows = await sheet.getRows();
-	
-	return rows;
+	const lastUpdate = new Date();
+	return {rows, lastUpdate};
 };
 
 export { updateSheet };
