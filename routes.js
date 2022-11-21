@@ -9,7 +9,7 @@ router.get("/", ({response}) => {
 });
 
 router.get("/data", ({response}) => {
-	  response.body = { message: data.lastUpdate }
+	  response.body = { data }
 	  response.status = 200;
 });
 
