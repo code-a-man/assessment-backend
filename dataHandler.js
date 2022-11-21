@@ -15,7 +15,7 @@ const updateSheet = async () => {
 	const rows = await sheet.getRows();
 	const lastUpdate = new Date();
 	console.log("Updated sheet");
-	return {rows, lastUpdate};
+	return { lastUpdate };
 };
 
 let data = await updateSheet();
