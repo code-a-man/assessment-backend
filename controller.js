@@ -18,7 +18,7 @@ const queryHandler = (query) => {
 const getRevenue = (query) => {
   const { id, dimensions, aggregate } = query;
   const fixedData = { ...data.brandRevenue }; // ? create a copy of the data to avoid changing the original data
-  if (aggregate !== "sum" || aggregate !== "avg") {
+  if (aggregate !== "sum" && aggregate !== "avg") {
     return { message: "Invalid aggregate" };
   }
 
