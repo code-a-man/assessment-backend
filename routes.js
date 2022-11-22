@@ -26,6 +26,7 @@ router.get("/metrics", (ctx) => {
     ctx.response.status = 400;
     return;
   }
+  query.dimensions = dimensions.split(",");
   const body = queryHandler(query);
   ctx.response.body = body;
   ctx.response.status = 200;
