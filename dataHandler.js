@@ -13,12 +13,26 @@ const updateSheet = async () => {
 
   const rows = await sheet.getRows();
   const lastUpdate = new Date();
+  // ? by doing this, approximately ~35ms execution times reduces per function and this map done by 75ms
+  // ? original rows variable holds ~290MB memory and fixedRows holds only ~20MB memory
+  // ? so this is a good tradeoff for memory and performance
+  const fixedRows = rows.map((row) => {
+    return {
+      event_time: row.event_time,
+      event_type: row.event_type,
+      price: row.price,
+      brand: row.brand,
+      user_id: row.user_id,
+      user_session: row.user_session,
+    };
+  });
   console.log("Updated sheet");
-  const brandRevenue = calcBrandRevenue(rows);
-  const weeklyDistinctSessions = getWeeklyDistinctSessions(rows);
-  const dailyConversionRate = calcDailyConversionRate(rows);
-  const netRevenueOfEachCustomer = calcNetRevenueOfEachCustomer(rows);
+  const brandRevenue = calcBrandRevenue(fixedRows);
+  const weeklyDistinctSessions = getWeeklyDistinctSessions(fixedRows);
+  const dailyConversionRate = calcDailyConversionRate(fixedRows);
+  const netRevenueOfEachCustomer = calcNetRevenueOfEachCustomer(fixedRows);
   return {
+    rows: fixedRows,
     lastUpdate,
     brandRevenue,
     weeklyDistinctSessions,
@@ -119,7 +133,7 @@ const calcNetRevenueOfEachCustomer = (rows) => {
 let data = await updateSheet();
 
 setInterval(async () => {
-	data = await updateSheet();
+  data = await updateSheet();
 }, 300000);
 
 export { data, updateSheet };
