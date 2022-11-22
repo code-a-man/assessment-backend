@@ -37,7 +37,7 @@ const getRevenue = (query) => {
 
 const getSessions = (query) => {
   const { id, dimensions, aggregate } = query;
-  const fixedData = { ...data.weeklyDistinctSessions }; // ? create a copy of the data to avoid changing the original data
+  const fixedData = { ...data.weeklyDistinctSessions };
 
   Object.keys(fixedData).forEach((key) =>
     fixedData[key] = [{ value: fixedData[key] }]
@@ -51,7 +51,18 @@ const getSessions = (query) => {
 };
 
 const getConversion = (query) => {
-  // TODO: implement
+  const { id, dimensions, aggregate } = query;
+  const fixedData = { ...data.dailyConversionRate };
+
+  Object.keys(fixedData).forEach((key) =>
+    fixedData[key] = [{ value: fixedData[key] }]
+  );
+  return {
+    metric: id,
+    dimensions: dimensions,
+    aggregation: aggregate,
+    data: fixedData,
+  };
 };
 
 const getNetRevenue = (query) => {
