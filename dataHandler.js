@@ -15,14 +15,14 @@ const updateSheet = async () => {
 	const rows = await sheet.getRows();
 	const lastUpdate = new Date();
 	console.log("Updated sheet");
-	const avgBrandRevenue = calcAvgBrandRevenue(rows);
+	const brandRevenue = calcBrandRevenue(rows);
 	const weeklyDistinctSessions = getWeeklyDistinctSessions(rows);
 	const dailyConversionRate = calcDailyConversionRate(rows);
 	const netRevenueOfEachCustomer = calcNetRevenueOfEachCustomer(rows);
-	return { lastUpdate, avgBrandRevenue, weeklyDistinctSessions, dailyConversionRate, netRevenueOfEachCustomer };
+	return { lastUpdate, brandRevenue, weeklyDistinctSessions, dailyConversionRate, netRevenueOfEachCustomer };
 };
 
-const calcAvgBrandRevenue = (rows) => {
+const calcBrandRevenue = (rows) => {
 	const brands = {};
 	rows.forEach((row) => {
 		if (row.event_type === "purchase") {
@@ -101,9 +101,9 @@ const calcNetRevenueOfEachCustomer = (rows) => {
 }
 
 let data = await updateSheet();
-
+/*
 setInterval(async () => {
 	data = await updateSheet();
 }, 300000);
-
+*/
 export { updateSheet, data };
