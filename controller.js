@@ -1,6 +1,7 @@
 import { data } from "./dataHandler.js";
 
 const queryHandler = (query) => {
+  // TODO filters
   switch (query.id) {
     case "revenue":
       return getRevenue(query);
@@ -66,6 +67,16 @@ const getConversion = (query) => {
 };
 
 const getNetRevenue = (query) => {
-  // TODO: implement
+  const { id, dimensions, aggregate } = query;
+  const fixedData = { ...data.netRevenueOfEachCustomer };
+  Object.keys(fixedData).forEach((key) => {
+      fixedData[key] = [{ value: fixedData[key] }];
+  });
+  return {
+    metric: id,
+    dimensions: dimensions,
+    aggregation: aggregate,
+    data: fixedData,
+  };
 };
 export { queryHandler };
