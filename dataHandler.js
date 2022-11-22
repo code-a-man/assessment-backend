@@ -84,10 +84,10 @@ const calcDailyConversionRate = (rows) => {
     }
   });
   Object.keys(dates).forEach((date) => {
-    dates[date].ratio = parseFloat(
+    dates[date].ratio =
       (dates[date].purchases / (Object.keys(dates[date].sessions).length) * 100)
-        .toFixed(2),
-    );
+        .toFixed(2);
+
     dates[date] = {
       sessions: Object.keys(dates[date].sessions).length,
       purchases: dates[date].purchases,
