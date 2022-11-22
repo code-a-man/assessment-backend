@@ -9,7 +9,7 @@ router.get("/", ({response}) => {
 });
 
 router.get("/data", ({response}) => {
-	  response.body = data
+	  response.body = { size: JSON.stringify(data).length, lastUpdate: data.lastUpdate};
 	  response.status = 200;
 });
 
