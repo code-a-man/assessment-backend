@@ -117,9 +117,9 @@ const calcNetRevenueOfEachCustomer = (rows) => {
 };
 
 let data = await updateSheet();
-/*
+
 setInterval(async () => {
 	data = await updateSheet();
 }, 300000);
-*/
+
 export { data, updateSheet };
