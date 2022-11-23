@@ -28,7 +28,7 @@ const updateSheet = async () => {
   });
   console.log("Updated sheet");
   const brandRevenue = calcBrandRevenue(fixedRows);
-  const weeklyDistinctSessions = getWeeklyDistinctSessions(fixedRows);
+  const weeklyDistinctSessions = calcWeeklyDistinctSessions(fixedRows);
   const dailyConversionRate = calcDailyConversionRate(fixedRows);
   const netRevenueOfEachCustomer = calcNetRevenueOfEachCustomer(fixedRows);
   return {
@@ -70,7 +70,7 @@ const calcBrandRevenue = (rows) => {
   return brands;
 };
 
-const getWeeklyDistinctSessions = (rows) => {
+const calcWeeklyDistinctSessions = (rows) => {
   const sessions = {};
   const sessionsWeeks = {};
   rows.forEach((row) => {
@@ -149,6 +149,6 @@ export {
   calcNetRevenueOfEachCustomer,
   data,
   getRowsByDateRange,
-  getWeeklyDistinctSessions,
+  calcWeeklyDistinctSessions,
   updateSheet,
 };

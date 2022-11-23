@@ -2,9 +2,9 @@ import {
   calcBrandRevenue,
   calcDailyConversionRate,
   calcNetRevenueOfEachCustomer,
+  calcWeeklyDistinctSessions,
   data,
   getRowsByDateRange,
-  getWeeklyDistinctSessions,
 } from "./dataHandler.js";
 
 const queryHandler = (query) => {
@@ -75,7 +75,7 @@ const getRevenue = (query, rows, checkFilter) => {
 
 const getSessions = (query, rows, checkFilter) => {
   const fixedData = checkFilter
-    ? getWeeklyDistinctSessions(rows)
+    ? calcWeeklyDistinctSessions(rows)
     : { ...data.weeklyDistinctSessions };
 
   Object.keys(fixedData).forEach((key) =>
