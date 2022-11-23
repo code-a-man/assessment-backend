@@ -8,4 +8,6 @@ app.use(oakCors());
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-await app.listen({ port: 8000 });
+const port = Deno.env.get("PORT") || 8000;
+await app.listen({ port });
+console.log(`Server running on port ${port}`);
