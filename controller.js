@@ -9,7 +9,7 @@ import {
 
 const queryHandler = (query) => {
   // TODO make filters object
-  let data;
+  let procData;
 
   const checkFilter = Object.keys(query).some((key) =>
     key.startsWith("filter")
@@ -28,26 +28,26 @@ const queryHandler = (query) => {
 
   switch (query.id) {
     case "revenue":
-      data = getRevenue(query, rows, checkFilter);
+      procData = getRevenue(query, rows, checkFilter);
       break;
     case "sessions":
-      data = getSessions(query, rows, checkFilter);
+      procData = getSessions(query, rows, checkFilter);
       break;
     case "conversion":
-      data = getConversion(query, rows, checkFilter);
+      procData = getConversion(query, rows, checkFilter);
       break;
     case "net-revenue":
-      data = getNetRevenue(query, rows, checkFilter);
+      procData = getNetRevenue(query, rows, checkFilter);
       break;
     default:
-      data = { message: "Invalid id" };
+      procData = { message: "Invalid id" };
   }
 
   const returnedData = {
     metric: query.id,
     dimensions: query.dimensions,
     aggregation: query.aggregate,
-    data,
+    data: procData,
   };
   if (checkFilter) {
     returnedData.filters = {
