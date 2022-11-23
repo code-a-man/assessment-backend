@@ -1,8 +1,8 @@
 import { GoogleSpreadsheet } from "npm:google-spreadsheet";
-import { config as loadEnv } from "https://deno.land/std@0.165.0/dotenv/mod.ts";
+import { config } from "https://deno.land/std@0.165.0/dotenv/mod.ts";
+await config({ export: true, allowEmptyValues: true });
 
 const updateSheet = async () => {
-  await loadEnv({ export: true, allowEmptyValues: true });
 
   console.log("Updating sheet");
   const doc = new GoogleSpreadsheet(Deno.env.get("SHEET_ID"));
@@ -28,7 +28,7 @@ const updateSheet = async () => {
   });
   console.log("Updated sheet");
   const brandRevenue = calcBrandRevenue(fixedRows);
-  const weeklyDistinctSessions = getWeeklyDistinctSessions(fixedRows);
+  const weeklyDistinctSessions = calcWeeklyDistinctSessions(fixedRows);
   const dailyConversionRate = calcDailyConversionRate(fixedRows);
   const netRevenueOfEachCustomer = calcNetRevenueOfEachCustomer(fixedRows);
   return {
@@ -70,7 +70,7 @@ const calcBrandRevenue = (rows) => {
   return brands;
 };
 
-const getWeeklyDistinctSessions = (rows) => {
+const calcWeeklyDistinctSessions = (rows) => {
   const sessions = {};
   const sessionsWeeks = {};
   rows.forEach((row) => {
@@ -143,12 +143,12 @@ setInterval(async () => {
   data = await updateSheet();
 }, 300000);
 
-export { 
-	data,
-	updateSheet,
-	getRowsByDateRange,
-	calcBrandRevenue,
-	getWeeklyDistinctSessions,
-	calcDailyConversionRate,
-	calcNetRevenueOfEachCustomer,
+export {
+  calcBrandRevenue,
+  calcDailyConversionRate,
+  calcNetRevenueOfEachCustomer,
+  data,
+  getRowsByDateRange,
+  calcWeeklyDistinctSessions,
+  updateSheet,
 };

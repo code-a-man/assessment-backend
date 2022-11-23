@@ -1,36 +1,67 @@
-import { 
-	data,
-	getRowsByDateRange,
-	calcBrandRevenue,
-	getWeeklyDistinctSessions,
-	calcDailyConversionRate,
-	calcNetRevenueOfEachCustomer,
+import {
+  calcBrandRevenue,
+  calcDailyConversionRate,
+  calcNetRevenueOfEachCustomer,
+  calcWeeklyDistinctSessions,
+  data,
+  getRowsByDateRange,
 } from "./dataHandler.js";
 
 const queryHandler = (query) => {
   // TODO make filters object
-  const checkFilter = Object.keys(query).some((key) => key.startsWith("filter"));
+  let procData;
+
+  const checkFilter = Object.keys(query).some((key) =>
+    key.startsWith("filter")
+  );
   if (checkFilter && !query["filter.date.from"] && !query["filter.date.to"]) {
     return { message: "Missing required filtered query parameters" };
   }
-  const rows = checkFilter ? getRowsByDateRange(data.rows, query["filter.date.from"], query["filter.date.to"]) : {};
+
+  const rows = checkFilter
+    ? getRowsByDateRange(
+      data.rows,
+      query["filter.date.from"],
+      query["filter.date.to"],
+    )
+    : {};
+
   switch (query.id) {
     case "revenue":
-      return getRevenue(query, rows, checkFilter);
+      procData = getRevenue(query, rows, checkFilter);
+      break;
     case "sessions":
-      return getSessions(query, rows, checkFilter);
+      procData = getSessions(query, rows, checkFilter);
+      break;
     case "conversion":
-      return getConversion(query, rows, checkFilter);
+      procData = getConversion(query, rows, checkFilter);
+      break;
     case "net-revenue":
-      return getNetRevenue(query, rows, checkFilter);
+      procData = getNetRevenue(query, rows, checkFilter);
+      break;
     default:
-      return { message: "Invalid id" };
+      procData = { message: "Invalid id" };
   }
+
+  const returnedData = {
+    metric: query.id,
+    dimensions: query.dimensions,
+    aggregation: query.aggregate,
+    data: procData,
+  };
+  if (checkFilter) {
+    returnedData.filters = {
+      date: { from: query["filter.date.from"], to: query["filter.date.to"] },
+    };
+  }
+  return returnedData;
 };
 
 const getRevenue = (query, rows, checkFilter) => {
-  const { id, dimensions, aggregate } = query;
-  const fixedData = checkFilter ? calcBrandRevenue(rows) : { ...data.brandRevenue };
+  const { aggregate } = query;
+  const fixedData = checkFilter
+    ? calcBrandRevenue(rows)
+    : { ...data.brandRevenue };
   if (aggregate !== "sum" && aggregate !== "avg") {
     return { message: "Invalid aggregate" };
   }
@@ -39,57 +70,40 @@ const getRevenue = (query, rows, checkFilter) => {
   Object.keys(fixedData).forEach((key) =>
     fixedData[key] = [{ value: fixedData[key][value] }]
   );
-  return {
-    metric: id,
-    dimensions: dimensions,
-    aggregation: aggregate,
-    data: fixedData,
-  };
+  return fixedData;
 };
 
 const getSessions = (query, rows, checkFilter) => {
-  const { id, dimensions, aggregate } = query;
-  const fixedData = checkFilter ? getWeeklyDistinctSessions(rows) : { ...data.weeklyDistinctSessions };
+  const fixedData = checkFilter
+    ? calcWeeklyDistinctSessions(rows)
+    : { ...data.weeklyDistinctSessions };
 
   Object.keys(fixedData).forEach((key) =>
     fixedData[key] = [{ value: fixedData[key] }]
   );
-  return {
-    metric: id,
-    dimensions: dimensions,
-    aggregation: aggregate,
-    data: fixedData,
-  };
+  return fixedData;
 };
 
 const getConversion = (query, rows, checkFilter) => {
-  const { id, dimensions, aggregate } = query;
-  const fixedData = checkFilter ? calcDailyConversionRate(rows) : { ...data.dailyConversionRate };
+  const fixedData = checkFilter
+    ? calcDailyConversionRate(rows)
+    : { ...data.dailyConversionRate };
 
   Object.keys(fixedData).forEach((key) =>
     fixedData[key] = [{ value: fixedData[key] }]
   );
-  return {
-    metric: id,
-    dimensions: dimensions,
-    aggregation: aggregate,
-    data: fixedData,
-  };
+  return fixedData;
 };
 
 const getNetRevenue = (query, rows, checkFilter) => {
-  const { id, dimensions, aggregate } = query;
-  const fixedData = checkFilter ? calcNetRevenueOfEachCustomer(rows) : { ...data.netRevenueOfEachCustomer };
+  const fixedData = checkFilter
+    ? calcNetRevenueOfEachCustomer(rows)
+    : { ...data.netRevenueOfEachCustomer };
 
   Object.keys(fixedData).forEach((key) => {
-      fixedData[key] = [{ value: fixedData[key] }];
+    fixedData[key] = [{ value: fixedData[key] }];
   });
-  return {
-    metric: id,
-    dimensions: dimensions,
-    aggregation: aggregate,
-    data: fixedData,
-  };
+  return fixedData;
 };
 
 export { queryHandler };
