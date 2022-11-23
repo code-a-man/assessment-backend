@@ -143,12 +143,12 @@ setInterval(async () => {
   data = await updateSheet();
 }, 300000);
 
-export { 
-	data,
-	updateSheet,
-	getRowsByDateRange,
-	calcBrandRevenue,
-	getWeeklyDistinctSessions,
-	calcDailyConversionRate,
-	calcNetRevenueOfEachCustomer,
+export {
+  calcBrandRevenue,
+  calcDailyConversionRate,
+  calcNetRevenueOfEachCustomer,
+  data,
+  getRowsByDateRange,
+  getWeeklyDistinctSessions,
+  updateSheet,
 };
