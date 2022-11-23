@@ -9,5 +9,5 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 const port = Deno.env.get("PORT") || 8000;
-await app.listen({ port });
 console.log(`Server running on port ${port}`);
+await app.listen({ port });
