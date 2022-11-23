@@ -1,28 +1,39 @@
-import { data } from "./dataHandler.js";
+import { 
+	data,
+	getRowsByDateRange,
+	calcBrandRevenue,
+	getWeeklyDistinctSessions,
+	calcDailyConversionRate,
+	calcNetRevenueOfEachCustomer,
+} from "./dataHandler.js";
 
 const queryHandler = (query) => {
-  // TODO filters
+  // TODO make filters object
+  const checkFilter = Object.keys(query).some((key) => key.startsWith("filter"));
+  if (checkFilter && !query["filter.date.from"] && !query["filter.date.to"]) {
+    return { message: "Missing required filtered query parameters" };
+  }
+  const rows = checkFilter ? getRowsByDateRange(data.rows, query["filter.date.from"], query["filter.date.to"]) : {};
   switch (query.id) {
     case "revenue":
-      return getRevenue(query);
+      return getRevenue(query, rows, checkFilter);
     case "sessions":
-      return getSessions(query);
+      return getSessions(query, rows, checkFilter);
     case "conversion":
-      return getConversion(query);
+      return getConversion(query, rows, checkFilter);
     case "net-revenue":
-      return getNetRevenue(query);
+      return getNetRevenue(query, rows, checkFilter);
     default:
       return { message: "Invalid id" };
   }
 };
 
-const getRevenue = (query) => {
+const getRevenue = (query, rows, checkFilter) => {
   const { id, dimensions, aggregate } = query;
-  const fixedData = { ...data.brandRevenue }; // ? create a copy of the data to avoid changing the original data
+  const fixedData = checkFilter ? calcBrandRevenue(rows) : { ...data.brandRevenue };
   if (aggregate !== "sum" && aggregate !== "avg") {
     return { message: "Invalid aggregate" };
   }
-
   const value = aggregate === "avg" ? "avg" : "revenue";
 
   Object.keys(fixedData).forEach((key) =>
@@ -36,9 +47,9 @@ const getRevenue = (query) => {
   };
 };
 
-const getSessions = (query) => {
+const getSessions = (query, rows, checkFilter) => {
   const { id, dimensions, aggregate } = query;
-  const fixedData = { ...data.weeklyDistinctSessions };
+  const fixedData = checkFilter ? getWeeklyDistinctSessions(rows) : { ...data.weeklyDistinctSessions };
 
   Object.keys(fixedData).forEach((key) =>
     fixedData[key] = [{ value: fixedData[key] }]
@@ -51,9 +62,9 @@ const getSessions = (query) => {
   };
 };
 
-const getConversion = (query) => {
+const getConversion = (query, rows, checkFilter) => {
   const { id, dimensions, aggregate } = query;
-  const fixedData = { ...data.dailyConversionRate };
+  const fixedData = checkFilter ? calcDailyConversionRate(rows) : { ...data.dailyConversionRate };
 
   Object.keys(fixedData).forEach((key) =>
     fixedData[key] = [{ value: fixedData[key] }]
@@ -66,9 +77,10 @@ const getConversion = (query) => {
   };
 };
 
-const getNetRevenue = (query) => {
+const getNetRevenue = (query, rows, checkFilter) => {
   const { id, dimensions, aggregate } = query;
-  const fixedData = { ...data.netRevenueOfEachCustomer };
+  const fixedData = checkFilter ? calcNetRevenueOfEachCustomer(rows) : { ...data.netRevenueOfEachCustomer };
+
   Object.keys(fixedData).forEach((key) => {
       fixedData[key] = [{ value: fixedData[key] }];
   });
@@ -79,4 +91,5 @@ const getNetRevenue = (query) => {
     data: fixedData,
   };
 };
+
 export { queryHandler };
