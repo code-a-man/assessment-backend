@@ -130,10 +130,25 @@ const calcNetRevenueOfEachCustomer = (rows) => {
   return customers;
 };
 
+const getRowsByDateRange = (rows, startDate, endDate) => {
+  return rows.filter((row) => {
+    const rowDate = new Date(row.event_time);
+    return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
+  });
+};
+
 let data = await updateSheet();
 
 setInterval(async () => {
   data = await updateSheet();
 }, 300000);
 
-export { data, updateSheet };
+export { 
+	data,
+	updateSheet,
+	getRowsByDateRange,
+	calcBrandRevenue,
+	getWeeklyDistinctSessions,
+	calcDailyConversionRate,
+	calcNetRevenueOfEachCustomer,
+};
