@@ -1,8 +1,8 @@
 import { GoogleSpreadsheet } from "npm:google-spreadsheet";
-import { config as loadEnv } from "https://deno.land/std@0.165.0/dotenv/mod.ts";
+import { config } from "https://deno.land/std@0.165.0/dotenv/mod.ts";
+await config({ export: true, allowEmptyValues: true });
 
 const updateSheet = async () => {
-  await loadEnv({ export: true, allowEmptyValues: true });
 
   console.log("Updating sheet");
   const doc = new GoogleSpreadsheet(Deno.env.get("SHEET_ID"));
